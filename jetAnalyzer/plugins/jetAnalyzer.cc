@@ -36,24 +36,23 @@ private:
    // ----------member data ---------------------------     
    //edm::EDGetTokenT<pat::MuonCollection> muonCollToken;
    //edm::EDGetTokenT<pat::ElectronCollection> elecCollToken;
-   //edm::EDGetTokenT<pat::JetCollection> jetCollToken;
- edm::EDGetTokenT jetCollToken;
+   edm::EDGetTokenT<pat::JetCollection> jetCollToken;
+ 
 };
 
 
 jetAnalyzer::jetAnalyzer(const edm::ParameterSet& iConfig):
 
-   histContainer_(),
-   jetCollToken(consumes(iConfig.getParameter("slimmedJets")))
+   histContainer_()
    {
 
   //edm::InputTag muonTag("slimmedMuons");
   //edm::InputTag genPartTag("slimmedElectrons");
- // edm::InputTag jetTag("slimmedJets");
+  edm::InputTag jetTag("slimmedJets");
 
   // muonCollToken = consumes<pat::MuonCollection>(muonTag);
  // elecCollToken = consumes<pat::ElectronCollection>(genPartTag);
- // jetCollToken = consumes<pat::JetCollection>(jetTag);
+  jetCollToken = consumes<pat::JetCollection>(jetTag);
 
 }
 
@@ -78,14 +77,14 @@ jetAnalyzer::analyze(const edm::Event& iEvent,
       printf("jet  with pt %5.1f (raw pt %5.1f), eta %+4.2f, btag CSV %.3f, CISV %.3f, pileup mva disc %+.2f\n",
             j->pt(), j->pt()*j->jecFactor("Uncorrected"), j->eta(), std::max(0.f,j->bDiscriminator("combinedSecondaryVertexBJetTags")), std::max(0.f,j->bDiscriminator("combinedInclusiveSecondaryVertexBJetTags")), j->userFloat("pileupJetId:fullDiscriminant"));
  
-      /*   if ((++ijet) == 1) { // for the first jet, let's print the leading constituents
+         if ((++ijet) == 1) { // for the first jet, let's print the leading constituents
             std::vector daus(j->daughterPtrVector());
             std::sort(daus.begin(), daus.end(), [](const reco::CandidatePtr &p1, const reco::CandidatePtr &p2) { return p1->pt() > p2->pt(); }); // the joys of C++11
             for (unsigned int i2 = 0, n = daus.size(); i2 < n && i2 <= 3; ++i2) {
                 const pat::PackedCandidate &cand = dynamic_cast<const pat::PackedCandidate &>(*daus[i2]);
                 printf("         constituent %3d: pt %6.2f,  pdgId %+3d\n", i2,cand.pt(),cand.pdgId());
             }
-        }*/
+        }
       }
    }
  
